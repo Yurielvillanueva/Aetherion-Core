@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel | Aetherion Core</title>
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="admin-page">
+  <aside class="sidebar">
+    <div class="sidebar-brand">Aetherion Core</div>
+    <nav class="sidebar-nav">
+      <button data-panel="dashboard" class="active">Dashboard</button>
+      <button data-panel="users">Users</button>
+      <button data-panel="activity">Activity Logs</button>
+      <button data-panel="shop">Shop</button>
+      <button data-panel="staff">Staff</button>
+      <button data-panel="console">Live Console</button>
+      <button data-panel="files">File Manager</button>
+    </nav>
+    <button id="logout" class="button button-secondary sidebar-logout">Logout</button>
+  </aside>
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1>Admin Panel</h1>
+        <p>Manage server status, users, shop items, staff, console activity, and files.</p>
+      </div>
+      <div class="dashboard-summary">
+        <div class="summary-card"><span id="summary-users">0</span><small>Users</small></div>
+        <div class="summary-card"><span id="summary-items">0</span><small>Shop Items</small></div>
+        <div class="summary-card"><span id="summary-staff">0</span><small>Staff</small></div>
+      </div>
+    </header>
+
+    <section id="dashboard" class="admin-panel active">
+      <div class="cards-grid dashboard-cards">
+        <article class="dashboard-card">
+          <h3>Server Status</h3>
+          <p id="admin-server-status">Checking...</p>
+        </article>
+        <article class="dashboard-card">
+          <h3>Player Count</h3>
+          <p id="admin-player-count">0</p>
+        </article>
+        <article class="dashboard-card">
+          <h3>Error's logs</h3>
+          <div id="admin-log-sample" class="log-preview">Loading logs...</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="users" class="admin-panel">
+      <div class="panel-header">
+        <h2>Manage Users</h2>
+        <div class="form-actions">
+          <button id="new-user" class="button button-primary">Add User</button>
+          <button id="refresh-users" class="button button-secondary">Refresh</button>
+        </div>
+      </div>
+      <table class="admin-table">
+        <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="users-table"></tbody>
+      </table>
+    </section>
+
+    <section id="activity" class="admin-panel">
+      <div class="panel-header">
+        <h2>Activity Logs</h2>
+        <button id="refresh-activity" class="button button-secondary">Refresh</button>
+      </div>
+      <div class="cards-grid">
+        <article class="dashboard-card">
+          <h3>Audit Log</h3>
+          <div id="audit-log-list" class="log-preview">Loading audit logs...</div>
+        </article>
+        <article class="dashboard-card">
+          <h3>Login History</h3>
+          <div id="login-history-list" class="log-preview">Loading login history...</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="shop" class="admin-panel">
+      <div class="panel-header">
+        <h2>Manage Shop</h2>
+        <button id="new-shop-item" class="button button-primary">Add Item</button>
+      </div>
+      <table class="admin-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th><th>Description</th><th>Actions</th></tr></thead>
+        <tbody id="shop-table"></tbody>
+      </table>
+      <form id="shop-form" class="admin-form hidden">
+        <h3 id="shop-form-title">New Item</h3>
+        <label>Name</label><input name="name" required />
+        <label>Category</label><select name="category"><option value="ranks">Ranks</option><option value="items">Items</option><option value="kits">Kits</option></select>
+        <label>Price</label><input type="number" name="price" required />
+        <label>Description</label><textarea name="description" rows="3" required></textarea>
+        <div class="form-actions"><button type="submit" class="button button-primary">Save</button><button type="button" id="shop-cancel" class="button button-secondary">Cancel</button></div>
+      </form>
+    </section>
+
+    <section id="staff" class="admin-panel">
+      <div class="panel-header">
+        <h2>Manage Staff</h2>
+        <button id="new-staff-member" class="button button-primary">Add Member</button>
+      </div>
+      <table class="admin-table">
+        <thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Avatar</th><th>Actions</th></tr></thead>
+        <tbody id="staff-table"></tbody>
+      </table>
+      <form id="staff-form" class="admin-form hidden">
+        <h3 id="staff-form-title">New Staff Member</h3>
+        <label>Username</label><input name="username" required />
+        <label>Role</label><input name="role" required />
+        <label>Avatar URL</label><input name="avatar" required />
+        <div class="form-actions"><button type="submit" class="button button-primary">Save</button><button type="button" id="staff-cancel" class="button button-secondary">Cancel</button></div>
+      </form>
+    </section>
+
+    <section id="console" class="admin-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Live Console</h2>
+          <p class="small">View server output and send commands. Use the buttons below to control server state.</p>
+        </div>
+        <div class="form-actions">
+          <button id="start-server" class="button button-primary">Start Server</button>
+          <button id="stop-server" class="button button-danger">Stop Server</button>
+          <button id="restart-server" class="button button-secondary">Restart Server</button>
+        </div>
+        <div id="jar-warning" class="small" style="color: #f4b3b3; margin-top: 0.5rem;"></div>
+      </div>
+      <div class="console-container">
+        <div id="console-log" class="console-log"></div>
+        <form id="console-form" class="console-input-row">
+          <input id="console-command" placeholder="Enter command" autocomplete="off" />
+        </form>
+      </div>
+    </section>
+
+    <section id="files" class="admin-panel">
+      <div class="panel-header">
+        <div>
+          <h2>File Manager</h2>
+          <p class="small">Drag files here to upload them directly into the selected folder.</p>
+        </div>
+        <form id="upload-form" class="upload-form">
+          <input type="file" id="file-upload" multiple />
+          <button type="submit" class="button button-primary">Upload</button>
+        </form>
+      </div>
+      <div class="file-manager">
+        <div class="file-tree">
+          <h3>Files</h3>
+          <div id="upload-drop-zone" class="drop-zone">Drop files here or click to upload</div>
+          <ul id="file-list"></ul>
+        </div>
+        <div class="file-edit-panel">
+          <h3 id="file-path-title">Select a file</h3>
+          <p class="small">This manager is connected to your Feather server folder, so it mirrors the same files FileZilla uses.</p>
+          <textarea id="file-editor"></textarea>
+          <div class="form-actions"><button id="save-file" class="button button-primary">Save</button><button id="delete-file" class="button button-danger">Delete</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

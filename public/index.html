@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aetherion Core | Sky MMORPG Server (1.21+)</title>
+  <meta name="description" content="Join Aetherion Core, a high-fantasy sky server with custom items, quests, events, live map, and active community." />
+  <meta property="og:title" content="Aetherion Core | Play Now" />
+  <meta property="og:description" content="Server IP, live status, map, events, and community in one place." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/images/aetherion-logo.png" />
+  <meta property="og:url" content="https://aetherioncore.com" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="particle-layer" id="particle-layer" aria-hidden="true"></div>
+
+  <nav class="navbar glassmorphism">
+    <div class="container">
+      <div class="nav-left">
+        <img class="mini-logo" src="/images/aetherion-logo-128.png" alt="Aetherion logo" />
+      </div>
+      <div class="nav-center">
+        <a href="#features">Features</a>
+        <a href="#status">Status</a>
+        <a href="#map">Map</a>
+        <a href="#events">Events</a>
+        <a href="#faq">FAQ</a>
+        <a href="/shop.html">Store</a>
+      </div>
+      <div class="nav-right landing-controls">
+        <a href="/login.html" class="button button-secondary small-button">Login</a>
+        <a href="/signup.html" class="button button-primary small-button">Sign Up</a>
+        <select id="language-selector" class="landing-select" aria-label="Language selector">
+          <option value="en">EN</option>
+          <option value="id">ID</option>
+        </select>
+        <button id="theme-toggle" class="button button-secondary small-button" type="button">Theme</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero immersive landing-hero">
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="/videos/airship-flight.mp4" type="video/mp4" />
+      <img src="/images/hero-fallback.jpg" alt="Aetherion sky" loading="lazy" />
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content container" data-reveal>
+      <p class="eyebrow">Version Support 1.21+</p>
+      <h1 class="hero-title">ASCEND TO AETHERION CORE</h1>
+      <p class="hero-subtitle">Build floating kingdoms, raid custom bosses, and master the sky economy in a living multiplayer world.</p>
+
+      <div class="hero-badges">
+        <span class="hero-badge">Players Online: <strong id="hero-player-count">0</strong></span>
+        <span class="hero-badge">Total Joins: <strong id="hero-total-joins">0</strong></span>
+        <span class="hero-badge">Server: <strong>1.21+</strong></span>
+      </div>
+
+      <div class="ip-box" id="ip-box">
+        <span>IP: PLAY.AETHERION.COM</span>
+        <div class="copy-feedback" id="copy-feedback">COPIED!</div>
+      </div>
+
+      <div class="cta-buttons hero-cta">
+        <a href="#" class="button button-primary">Join Server</a>
+        <a href="#map" class="button button-secondary">View Map</a>
+        <a href="https://discord.gg/your-invite" class="button button-glow" target="_blank" rel="noopener">Discord</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="section social-proof" id="proof" data-reveal>
+      <h2>Community Momentum</h2>
+      <div class="cards-grid">
+        <article class="card">
+          <h3>Live Player Count</h3>
+          <p class="social-number" id="proof-online">0</p>
+        </article>
+        <article class="card">
+          <h3>Total Joins</h3>
+          <p class="social-number" id="proof-joins">0</p>
+        </article>
+        <article class="card">
+          <h3>Staff Online</h3>
+          <p class="social-number" id="proof-staff">0</p>
+        </article>
+      </div>
+      <div class="testimonial-slider" id="testimonial-slider">
+        <article class="testimonial active">"Best sky RPG server I have played this year." - Luna</article>
+        <article class="testimonial">"Custom quests and events actually feel meaningful here." - Vortex</article>
+        <article class="testimonial">"Performance is smooth even during major events." - Aster</article>
+      </div>
+    </section>
+
+    <section class="section features" id="features" data-reveal>
+      <h2>Feature Showcase</h2>
+      <div class="features-grid">
+        <article class="feature-card interactive">
+          <div class="feature-icon">IT</div>
+          <h3>50+ CUSTOM ITEMS</h3>
+          <p>Unique effects, progression tiers, and event-exclusive drops.</p>
+          <div class="status-row"><span>Content depth</span><strong>50+ items</strong></div>
+          <a href="#" class="learn-link">Learn more</a>
+        </article>
+        <article class="feature-card interactive">
+          <div class="feature-icon">QS</div>
+          <h3>20+ QUESTLINES</h3>
+          <p>Story arcs, bounty missions, and daily objectives across sky biomes.</p>
+          <div class="status-row"><span>Quest volume</span><strong>20+ quests</strong></div>
+          <a href="#" class="learn-link">Learn more</a>
+        </article>
+        <article class="feature-card interactive">
+          <div class="feature-icon">UP</div>
+          <h3>99.9% UPTIME</h3>
+          <p>Stable deployment and monitored node performance around the clock.</p>
+          <div class="status-row"><span>Reliability</span><strong>99.9% uptime</strong></div>
+          <a href="#" class="learn-link">Learn more</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="status" data-reveal>
+      <h2>Live Server Status</h2>
+      <div class="cards-grid">
+        <article class="dashboard-card">
+          <h3>Status</h3>
+          <p id="server-status-badge" class="status-pill offline">Offline</p>
+        </article>
+        <article class="dashboard-card">
+          <h3>TPS</h3>
+          <p id="server-tps">--</p>
+        </article>
+        <article class="dashboard-card">
+          <h3>Uptime %</h3>
+          <p id="server-uptime">99.9%</p>
+        </article>
+        <article class="dashboard-card">
+          <h3>Restart In</h3>
+          <p id="restart-countdown">--:--:--</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section map" id="map" data-reveal>
+      <h2>Interactive World Map</h2>
+      <div class="map-frame" id="map-frame">
+        <iframe id="map-iframe" title="Live server map" src="about:blank" loading="lazy" class="dynmap-iframe"></iframe>
+        <div class="map-overlay-note">Set your Dynmap or BlueMap URL in the iframe source to enable live map embed.</div>
+      </div>
+      <div class="form-actions">
+        <button id="map-fullscreen" class="button button-secondary" type="button">Fullscreen Map</button>
+        <a href="#" class="button button-muted">Quick Markers</a>
+      </div>
+    </section>
+
+    <section class="section" id="gameplay" data-reveal>
+      <h2>Gameplay Preview</h2>
+      <div class="preview-tabs" id="preview-tabs">
+        <button class="category-button active" data-preview="pvp">PvP</button>
+        <button class="category-button" data-preview="builds">Builds</button>
+        <button class="category-button" data-preview="events">Events</button>
+      </div>
+      <div class="preview-slider" id="preview-slider">
+        <article class="preview-slide active" data-preview-slide="pvp">Fast aerial duels and ranked sky arenas.</article>
+        <article class="preview-slide" data-preview-slide="builds">Massive floating cities and engineering hubs.</article>
+        <article class="preview-slide" data-preview-slide="events">Seasonal raids, races, and live tournaments.</article>
+      </div>
+    </section>
+
+    <section class="section" id="economy" data-reveal>
+      <h2>Economy and Shop Preview</h2>
+      <div class="cards-grid" id="featured-shop-items">
+        <article class="card"><h3>Loading featured items...</h3></article>
+      </div>
+      <div class="cta-buttons">
+        <a href="/shop.html" class="button button-primary">View Shop</a>
+      </div>
+    </section>
+
+    <section class="section" id="discord" data-reveal>
+      <h2>Discord Integration</h2>
+      <div class="cards-grid">
+        <article class="card">
+          <h3>Community Online</h3>
+          <p id="discord-online">Members online: --</p>
+          <a id="discord-join-link" href="https://discord.gg/your-invite" class="button button-glow" target="_blank" rel="noopener">Join Discord</a>
+        </article>
+        <article class="card">
+          <h3>Widget</h3>
+          <iframe id="discord-widget" title="Discord widget" src="about:blank" loading="lazy" class="discord-widget"></iframe>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="events" data-reveal>
+      <h2>Upcoming Events</h2>
+      <p class="map-caption">Next major event starts in <strong id="event-countdown">--:--:--</strong></p>
+      <div class="cards-grid" id="events-grid">
+        <article class="card"><h3>Loading events...</h3></article>
+      </div>
+    </section>
+
+    <section class="section achievements" id="achievements" data-reveal>
+      <h2>Achievements and Leaderboard</h2>
+      <div class="cards-grid">
+        <article class="card">
+          <h3>Top Players</h3>
+          <div class="status-row"><span>#1 SkyLancer</span><strong>12,440 XP</strong></div>
+          <div class="status-row"><span>#2 IronNova</span><strong>11,980 XP</strong></div>
+          <div class="status-row"><span>#3 WardenX</span><strong>11,120 XP</strong></div>
+        </article>
+        <article class="card">
+          <h3>Recent Wins</h3>
+          <div class="achievement-item">Team Ember won Cathedral Defense.</div>
+          <div class="achievement-item">Aster unlocked Skyforged Rank.</div>
+          <div class="achievement-item">Nova guild cleared Boss Rift T5.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section cta-final" data-reveal>
+      <div class="cta-content">
+        <h2>Play Now and Claim Your Skybase</h2>
+        <p class="map-caption">Server maintenance window in <span id="maintenance-countdown">--:--:--</span></p>
+        <div class="cta-buttons">
+          <a href="#" class="button button-primary">Play Now</a>
+          <a href="https://discord.gg/your-invite" class="button button-glow" target="_blank" rel="noopener">Join Discord</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" data-reveal>
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        <details class="card" open>
+          <summary>How do I join?</summary>
+          <p>Use Minecraft Java Edition 1.21+ and connect to <strong>PLAY.AETHERION.COM</strong>.</p>
+        </details>
+        <details class="card">
+          <summary>Is this cracked or premium?</summary>
+          <p>This server is designed for premium accounts. Check Discord for latest policy.</p>
+        </details>
+        <details class="card">
+          <summary>Where are the rules?</summary>
+          <p>Open the Rules page from footer links or ask staff in Discord.</p>
+        </details>
+        <details class="card">
+          <summary>What versions are supported?</summary>
+          <p>Primary support is 1.21+ with optimized plugin stack.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="/shop.html">Store</a>
+        <a href="#">Rules</a>
+        <a href="/staff.html">Staff</a>
+        <a href="#">Support</a>
+        <a href="https://discord.gg/your-invite" target="_blank" rel="noopener">Discord</a>
+      </div>
+      <p class="disclaimer">Aetherion Core. Minecraft is property of Mojang Studios. Not affiliated with Mojang or Microsoft.</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

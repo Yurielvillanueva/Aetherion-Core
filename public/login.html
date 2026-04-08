@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Aetherion Core</title>
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <h1>Login</h1>
+    <p>Access your account and manage your server experience.</p>
+    <form id="login-form">
+      <label>Email</label>
+      <input type="email" name="email" required />
+      <label>Password</label>
+      <input type="password" name="password" required minlength="8" />
+      <button type="submit" class="button button-primary">Login</button>
+      <p class="small">Do not have an account? <a href="/signup.html">Sign up</a></p>
+      <p id="login-error" class="form-error"></p>
+    </form>
+  </main>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

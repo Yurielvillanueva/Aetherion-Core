@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop | Aetherion Core</title>
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="page-header container">
+    <div>
+      <h1>Shop</h1>
+      <p>Browse ranks, items, and kits available in Aetherion Core.</p>
+    </div>
+    <nav class="page-nav">
+      <a href="/">Home</a>
+      <a href="/staff.html">Staff</a>
+      <a href="/login.html">Login</a>
+    </nav>
+  </header>
+  <main class="container shop-page">
+    <div class="shop-filters">
+      <button data-category="all" class="category-button active">All</button>
+      <button data-category="ranks" class="category-button">Ranks</button>
+      <button data-category="items" class="category-button">Items</button>
+      <button data-category="kits" class="category-button">Kits</button>
+    </div>
+    <div id="shop-grid" class="cards-grid"></div>
+  </main>
+  <script src="/js/shop.js"></script>
+</body>
+</html>
