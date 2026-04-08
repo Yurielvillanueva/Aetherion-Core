@@ -4,6 +4,7 @@ const http = require('http');
 const session = require('express-session');
 const fs = require('fs');
 const { WebSocketServer } = require('ws');
+const { Rcon } = require('rcon-client');
 const authRoutes = require('./server/routes/auth');
 const usersRoutes = require('./server/routes/users');
 const shopRoutes = require('./server/routes/shop');
@@ -19,6 +20,10 @@ const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 const SERVER_DIR = process.env.MC_SERVER_PATH || path.join('C:', 'Users', 'yurie', 'AppData', 'Roaming', '.feather', 'player-server', 'servers', 'be454106-9901-4c1e-9552-e362526b8c51');
 const SERVER_JAR_NAME = process.env.MC_SERVER_JAR || 'server.jar';
+const MC_RCON_HOST = process.env.MC_RCON_HOST || '';
+const MC_RCON_PORT = Number.parseInt(process.env.MC_RCON_PORT || '25575', 10);
+const MC_RCON_PASSWORD = process.env.MC_RCON_PASSWORD || '';
+const RCON_ENABLED = Boolean(MC_RCON_HOST && MC_RCON_PASSWORD);
 const isProduction = process.env.NODE_ENV === 'production';
 if (!process.env.SESSION_SECRET) {
   const message = 'SESSION_SECRET is not set. Set a strong secret in your environment.';
@@ -144,7 +149,8 @@ function startConsoleProcess() {
   }
   const fork = require('child_process').spawn('java', ['-Xmx1024M', '-Xms1024M', '-jar', jarPath, 'nogui'], {
     cwd: serverDir,
-    stdio: ['pipe', 'pipe', 'pipe']
+    stdio: ['pipe', 'pipe', 'pipe'],
+    windowsHide: true
   });
   consoleProcess = fork;
   serverRoutes.setServerProcess(fork);
@@ -193,9 +199,41 @@ function restartConsoleProcess() {
   return true;
 }
 
+async function sendCommandToMinecraft(command) {
+  if (consoleProcess?.stdin?.writable) {
+    consoleProcess.stdin.write(`${command}\n`);
+    broadcastConsole(`[WEB] Command sent: ${command}`);
+    return { success: true, message: `Command sent locally: ${command}` };
+  }
+
+  if (RCON_ENABLED) {
+    const rcon = await Rcon.connect({
+      host: MC_RCON_HOST,
+      port: MC_RCON_PORT,
+      password: MC_RCON_PASSWORD
+    });
+    try {
+      const response = await rcon.send(command);
+      const reply = String(response || '').trim();
+      if (reply) broadcastConsole(`[RCON] ${reply}`);
+      broadcastConsole(`[WEB] RCON command sent: ${command}`);
+      return { success: true, message: reply || `Command sent via RCON: ${command}` };
+    } finally {
+      rcon.end();
+    }
+  }
+
+  const missingRcon = [];
+  if (!MC_RCON_HOST) missingRcon.push('MC_RCON_HOST');
+  if (!MC_RCON_PASSWORD) missingRcon.push('MC_RCON_PASSWORD');
+  const missingText = missingRcon.length ? ` Missing: ${missingRcon.join(', ')}.` : '';
+  throw new Error(`Minecraft server is not running locally and RCON is not configured.${missingText}`);
+}
+
 serverRoutes.setStartCallback(startConsoleProcess);
 serverRoutes.setStopCallback(stopConsoleProcess);
 serverRoutes.setRestartCallback(restartConsoleProcess);
+serverRoutes.setExecuteCommandCallback(sendCommandToMinecraft);
 
 wss.on('connection', (socket, req) => {
   const sessionResShim = {
@@ -218,11 +256,20 @@ wss.on('connection', (socket, req) => {
     socket.send(JSON.stringify({ type: 'console', message: 'Connected to Aetherion Core live console.' }));
     consoleHistory.forEach(line => socket.send(JSON.stringify({ type: 'console', message: line })));
 
-    socket.on('message', raw => {
+    socket.on('message', async raw => {
       try {
         const data = JSON.parse(raw);
-        if (data.type === 'command' && consoleProcess && consoleProcess.stdin.writable) {
-          consoleProcess.stdin.write(`${data.command}\n`);
+        if (data.type === 'command') {
+          const command = String(data.command || '').trim();
+          if (!command) return;
+          try {
+            const result = await sendCommandToMinecraft(command);
+            if (result?.message) {
+              socket.send(JSON.stringify({ type: 'console', message: `[WEB] ${result.message}` }));
+            }
+          } catch (cmdErr) {
+            socket.send(JSON.stringify({ type: 'console', message: `[WEB] Command failed: ${cmdErr.message}` }));
+          }
         }
       } catch (error) {
         console.error('WebSocket parse error', error);
@@ -232,6 +279,13 @@ wss.on('connection', (socket, req) => {
 });
 
 // startConsoleProcess(); // Temporarily disabled
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ success: false, error: 'API route not found' });
+  }
+  next();
+});
 
 app.use((err, req, res, next) => {
   console.error(err);

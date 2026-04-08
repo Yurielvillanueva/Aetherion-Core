@@ -29,6 +29,7 @@
     "express-rate-limit": "^7.0.0",
     "express-session": "^1.17.3",
     "pm2": "^5.4.3",
+    "rcon-client": "^4.2.5",
     "sqlite3": "^5.1.6",
     "ws": "^8.13.0"
   },

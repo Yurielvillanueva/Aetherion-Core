@@ -35,7 +35,7 @@ async function seed() {
       const items = [
         ['Diamond Rank', 'ranks', 1200, 'Unlock exclusive rank boost and custom tag.'],
         ['Starter Kit', 'kits', 350, 'Beginner kit with tools, armor, and food.'],
-        ['Epic Sword', 'items', 750, 'Powerful sword with enhanced damage.']
+        ['Epic word', 'items', 750, 'Powerful sword with enhanced damage.']
       ];
       const stmt = db.prepare('INSERT INTO shop (name, category, price, description) VALUES (?, ?, ?, ?)');
       items.forEach(item => stmt.run(item));

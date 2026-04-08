@@ -10,7 +10,19 @@ const defaultHost = process.env.MC_SERVER_HOST || 'localhost';
 const defaultPort = Number.parseInt(process.env.MC_SERVER_PORT || '25565', 10);
 const SERVER_DIR = process.env.MC_SERVER_PATH || path.join('C:', 'Users', 'yurie', 'AppData', 'Roaming', '.feather', 'player-server', 'servers', 'be454106-9901-4c1e-9552-e362526b8c51');
 const SERVER_JAR_NAME = process.env.MC_SERVER_JAR || 'server.jar';
+const KIT_CREATE_COMMAND_TEMPLATE = process.env.KIT_CREATE_COMMAND_TEMPLATE || 'createkit {name}';
+const KIT_DELETE_COMMAND_TEMPLATE = process.env.KIT_DELETE_COMMAND_TEMPLATE || 'delkit {name}';
+const KIT_HELP_COMMAND = process.env.KIT_HELP_COMMAND || 'kits';
 const consoleGuard = ensurePermission('can_view_console');
+
+function buildKitCommand(template, name) {
+  const safeTemplate = String(template || '').trim();
+  if (!safeTemplate) return '';
+  if (safeTemplate.includes('{name}')) {
+    return safeTemplate.replace(/\{name\}/g, name);
+  }
+  return `${safeTemplate} ${name}`.trim();
+}
 
 function findServerJarPath() {
   const explicitJar = path.join(SERVER_DIR, SERVER_JAR_NAME);
@@ -39,6 +51,7 @@ let serverProcessRef = null;
 let startServerCallback = null;
 let stopServerCallback = null;
 let restartServerCallback = null;
+let executeCommandCallback = null;
 
 router.setServerProcess = (process) => {
   serverProcessRef = process;
@@ -54,6 +67,10 @@ router.setStopCallback = (callback) => {
 
 router.setRestartCallback = (callback) => {
   restartServerCallback = callback;
+};
+
+router.setExecuteCommandCallback = (callback) => {
+  executeCommandCallback = callback;
 };
 
 router.get('/status', async (req, res) => {
@@ -137,6 +154,68 @@ router.post('/restart', consoleGuard, (req, res) => {
     return res.status(500).json({ success: false, error: 'Unable to restart server.' });
   }
   res.json({ success: true, message: 'Restart command sent' });
+});
+
+router.post('/command', consoleGuard, async (req, res) => {
+  const command = String(req.body?.command || '').trim();
+  if (!command) {
+    return res.status(400).json({ success: false, error: 'Command is required' });
+  }
+  if (!executeCommandCallback) {
+    return res.status(500).json({ success: false, error: 'Command callback is not configured' });
+  }
+  try {
+    const result = await executeCommandCallback(command);
+    return res.json({ success: true, message: result?.message || `Command sent: ${command}` });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message || 'Unable to send command' });
+  }
+});
+
+router.post('/kits', consoleGuard, async (req, res) => {
+  const name = String(req.body?.name || '').trim();
+  if (!/^[a-zA-Z0-9_-]{2,32}$/.test(name)) {
+    return res.status(400).json({ success: false, error: 'Kit name must be 2-32 chars (letters, numbers, _ or -)' });
+  }
+  if (!executeCommandCallback) {
+    return res.status(500).json({ success: false, error: 'Command callback is not configured' });
+  }
+  try {
+    const command = buildKitCommand(KIT_CREATE_COMMAND_TEMPLATE, name);
+    await executeCommandCallback(command);
+    return res.json({ success: true, message: `Kit create command sent: ${command}` });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message || 'Unable to create kit' });
+  }
+});
+
+router.delete('/kits/:name', consoleGuard, async (req, res) => {
+  const name = String(req.params.name || '').trim();
+  if (!/^[a-zA-Z0-9_-]{2,32}$/.test(name)) {
+    return res.status(400).json({ success: false, error: 'Invalid kit name' });
+  }
+  if (!executeCommandCallback) {
+    return res.status(500).json({ success: false, error: 'Command callback is not configured' });
+  }
+  try {
+    const command = buildKitCommand(KIT_DELETE_COMMAND_TEMPLATE, name);
+    await executeCommandCallback(command);
+    return res.json({ success: true, message: `Kit delete command sent: ${command}` });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message || 'Unable to delete kit' });
+  }
+});
+
+router.post('/kits/help', consoleGuard, async (req, res) => {
+  if (!executeCommandCallback) {
+    return res.status(500).json({ success: false, error: 'Command callback is not configured' });
+  }
+  try {
+    await executeCommandCallback(KIT_HELP_COMMAND);
+    return res.json({ success: true, message: `Kit help command sent: ${KIT_HELP_COMMAND}` });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message || 'Unable to show kit help' });
+  }
 });
 
 function pingMinecraft(host, port, timeout) {

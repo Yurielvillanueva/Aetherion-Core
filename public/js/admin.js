@@ -15,6 +15,11 @@ const auditLogList = document.getElementById('audit-log-list');
 const loginHistoryList = document.getElementById('login-history-list');
 const shopTable = document.getElementById('shop-table');
 const staffTable = document.getElementById('staff-table');
+const kitNameInput = document.getElementById('kit-name');
+const createKitBtn = document.getElementById('create-kit');
+const deleteKitBtn = document.getElementById('delete-kit');
+const refreshKitsHelpBtn = document.getElementById('refresh-kits-help');
+const kitActionStatus = document.getElementById('kit-action-status');
 const shopForm = document.getElementById('shop-form');
 const staffForm = document.getElementById('staff-form');
 const newShopItem = document.getElementById('new-shop-item');
@@ -50,6 +55,15 @@ let lastOfficialErrorSummary = '';
 let lastOfficialErrorAt = 0;
 let dashboardErrorLines = [];
 const DASHBOARD_ERROR_LIMIT = 120;
+const SESSION_KEEPALIVE_MS = 5 * 60 * 1000;
+let keepaliveTimer = null;
+
+function redirectToLogin(message = 'Session expired. Please log in again.') {
+  appendConsoleMessage(message);
+  setTimeout(() => {
+    window.location.href = '/login.html';
+  }, 300);
+}
 
 function showPanel(panelName) {
   panels.forEach(panel => panel.classList.remove('active'));
@@ -225,6 +239,10 @@ async function sendCommand(command) {
 async function startServer() {
   try {
     const response = await fetch('/api/server/start', { method: 'POST', credentials: 'same-origin' });
+    if (response.status === 401) {
+      redirectToLogin('Session expired while starting server.');
+      return;
+    }
     if (!response.ok) {
       const text = await response.text();
       appendConsoleMessage(`Error: HTTP ${response.status} - ${text.substring(0, 100)}`);
@@ -241,6 +259,10 @@ async function startServer() {
 async function stopServer() {
   try {
     const response = await fetch('/api/server/stop', { method: 'POST', credentials: 'same-origin' });
+    if (response.status === 401) {
+      redirectToLogin('Session expired while stopping server.');
+      return;
+    }
     if (!response.ok) {
       const text = await response.text();
       appendConsoleMessage(`Error: HTTP ${response.status} - ${text.substring(0, 100)}`);
@@ -257,6 +279,10 @@ async function stopServer() {
 async function restartServer() {
   try {
     const response = await fetch('/api/server/restart', { method: 'POST', credentials: 'same-origin' });
+    if (response.status === 401) {
+      redirectToLogin('Session expired while restarting server.');
+      return;
+    }
     if (!response.ok) {
       const text = await response.text();
       appendConsoleMessage(`Error: HTTP ${response.status} - ${text.substring(0, 100)}`);
@@ -272,6 +298,100 @@ async function restartServer() {
 
 function stripAnsiCodes(text) {
   return text.replace(/\x1B\[[0-9;]*[A-Za-z]/g, '');
+}
+
+async function sendServerCommandViaApi(command) {
+  const response = await fetch('/api/server/command', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify({ command })
+  });
+  const json = await parseApiJson(response);
+  if (!response.ok || !json.success) throw new Error(json.error || 'Command failed');
+  return json;
+}
+
+async function parseApiJson(response) {
+  if (response.status === 401) {
+    redirectToLogin();
+    throw new Error('Authentication required');
+  }
+  const rawText = await response.text();
+  let json;
+  try {
+    json = rawText ? JSON.parse(rawText) : {};
+  } catch (error) {
+    if (rawText.trim().startsWith('<!DOCTYPE') || rawText.trim().startsWith('<html')) {
+      throw new Error('Session expired or API route returned HTML. Please log in again and refresh.');
+    }
+    throw new Error(`Unexpected server response (HTTP ${response.status}).`);
+  }
+  return json;
+}
+
+function getKitNameInput() {
+  return String(kitNameInput?.value || '').trim();
+}
+
+async function createKitFromPanel() {
+  const name = getKitNameInput();
+  if (!name) {
+    kitActionStatus.textContent = 'Enter a kit name first.';
+    return;
+  }
+  try {
+    const response = await fetch('/api/server/kits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ name })
+    });
+    const json = await parseApiJson(response);
+    if (!response.ok || !json.success) throw new Error(json.error || 'Unable to create kit');
+    kitActionStatus.textContent = json.message || `Kit created: ${name}`;
+    appendConsoleMessage(`[KIT] ${kitActionStatus.textContent}`);
+  } catch (error) {
+    kitActionStatus.textContent = error.message;
+    appendConsoleMessage(`[KIT] Create failed: ${error.message}`);
+  }
+}
+
+async function deleteKitFromPanel() {
+  const name = getKitNameInput();
+  if (!name) {
+    kitActionStatus.textContent = 'Enter a kit name first.';
+    return;
+  }
+  const confirmDelete = confirm(`Delete kit "${name}"?`);
+  if (!confirmDelete) return;
+  try {
+    const response = await fetch(`/api/server/kits/${encodeURIComponent(name)}`, {
+      method: 'DELETE',
+      credentials: 'same-origin'
+    });
+    const json = await parseApiJson(response);
+    if (!response.ok || !json.success) throw new Error(json.error || 'Unable to delete kit');
+    kitActionStatus.textContent = json.message || `Kit deleted: ${name}`;
+    appendConsoleMessage(`[KIT] ${kitActionStatus.textContent}`);
+  } catch (error) {
+    kitActionStatus.textContent = error.message;
+    appendConsoleMessage(`[KIT] Delete failed: ${error.message}`);
+  }
+}
+
+async function showKitsHelp() {
+  try {
+    const response = await fetch('/api/server/kits/help', {
+      method: 'POST',
+      credentials: 'same-origin'
+    });
+    const json = await parseApiJson(response);
+    if (!response.ok || !json.success) throw new Error(json.error || 'Unable to show kits help');
+    kitActionStatus.textContent = json.message || 'Sent /kits command.';
+  } catch (error) {
+    kitActionStatus.textContent = error.message;
+  }
 }
 
 function extractPluginName(logLine) {
@@ -430,7 +550,30 @@ function initializeWebSocket() {
     }
   });
   ws.addEventListener('open', () => appendConsoleMessage('Connected to live console.'));
-  ws.addEventListener('close', () => appendConsoleMessage('Console connection closed.'));
+  ws.addEventListener('close', event => {
+    if (event.code === 1008) {
+      redirectToLogin('Console access expired. Please log in again.');
+      return;
+    }
+    appendConsoleMessage('Console connection closed.');
+  });
+}
+
+function startSessionKeepalive() {
+  if (keepaliveTimer) clearInterval(keepaliveTimer);
+  keepaliveTimer = setInterval(async () => {
+    try {
+      const response = await fetch('/api/auth/me', { credentials: 'same-origin' });
+      if (response.status === 401) {
+        redirectToLogin();
+        return;
+      }
+      const json = await response.json();
+      if (!json?.user) redirectToLogin();
+    } catch (error) {
+      // Ignore transient errors to avoid noisy UI during brief network hiccups.
+    }
+  }, SESSION_KEEPALIVE_MS);
 }
 
 async function submitShopForm(event) {
@@ -667,6 +810,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   loadStaffMembers();
   loadFileList();
   initializeWebSocket();
+  startSessionKeepalive();
   setupDragDrop();
 });
 
@@ -800,3 +944,6 @@ uploadForm?.addEventListener('submit', uploadFile);
 refreshUsersBtn?.addEventListener('click', loadUsers);
 newUserBtn?.addEventListener('click', createUserPrompt);
 refreshActivityBtn?.addEventListener('click', loadActivityLogs);
+createKitBtn?.addEventListener('click', createKitFromPanel);
+deleteKitBtn?.addEventListener('click', deleteKitFromPanel);
+refreshKitsHelpBtn?.addEventListener('click', showKitsHelp);

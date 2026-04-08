@@ -15,6 +15,7 @@
       <button data-panel="users">Users</button>
       <button data-panel="activity">Activity Logs</button>
       <button data-panel="shop">Shop</button>
+      <button data-panel="kits">Kits</button>
       <button data-panel="staff">Staff</button>
       <button data-panel="console">Live Console</button>
       <button data-panel="files">File Manager</button>
@@ -99,6 +100,25 @@
         <label>Description</label><textarea name="description" rows="3" required></textarea>
         <div class="form-actions"><button type="submit" class="button button-primary">Save</button><button type="button" id="shop-cancel" class="button button-secondary">Cancel</button></div>
       </form>
+    </section>
+
+    <section id="kits" class="admin-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Kit Manager</h2>
+          <p class="small">Create and delete kits from the panel using configured server commands (currently CMI defaults).</p>
+        </div>
+      </div>
+      <div class="admin-form">
+        <label for="kit-name">Kit Name</label>
+        <input id="kit-name" name="kit-name" placeholder="starter" />
+        <div class="form-actions">
+          <button id="create-kit" class="button button-primary" type="button">Create Kit</button>
+          <button id="delete-kit" class="button button-danger" type="button">Delete Kit</button>
+          <button id="refresh-kits-help" class="button button-secondary" type="button">Show /kits Help</button>
+        </div>
+        <p id="kit-action-status" class="small">Ready.</p>
+      </div>
     </section>
 
     <section id="staff" class="admin-panel">

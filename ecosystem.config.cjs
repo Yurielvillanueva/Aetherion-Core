@@ -12,7 +12,15 @@ module.exports = {
       time: true,
       env: {
         NODE_ENV: 'production',
-        PORT: 3000
+        PORT: 3000,
+        MC_SERVER_HOST: '127.0.0.1',
+        MC_SERVER_PORT: 25565,
+        MC_RCON_HOST: '127.0.0.1',
+        MC_RCON_PORT: 25575,
+        MC_RCON_PASSWORD: process.env.MC_RCON_PASSWORD || '622d67c16f1f418f82ec47a4',
+        KIT_CREATE_COMMAND_TEMPLATE: process.env.KIT_CREATE_COMMAND_TEMPLATE || 'cmi kiteditor new {name}',
+        KIT_DELETE_COMMAND_TEMPLATE: process.env.KIT_DELETE_COMMAND_TEMPLATE || 'cmi removekit {name}',
+        KIT_HELP_COMMAND: process.env.KIT_HELP_COMMAND || 'cmi kit'
       }
     }
   ]
