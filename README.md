@@ -36,6 +36,30 @@ npm start
 
 4. Open `http://localhost:3000` in your browser.
 
+## Cloudflare frontend + external API
+
+If your frontend is on `*.workers.dev` but your Node API is hosted elsewhere:
+
+1. Set frontend API base URL in [`public/js/config.js`](public/js/config.js):
+   - `apiBaseUrl: 'https://your-api-domain.com'`
+2. Set backend env vars:
+   - `CORS_ORIGINS=https://your-frontend-domain.workers.dev`
+   - `SESSION_COOKIE_SAMESITE=none`
+   - `SESSION_COOKIE_SECURE=true`
+3. Restart backend after changing env.
+
+Without this, login/signup can fail with generic server/network errors due to CORS/cookie blocking.
+
+## Auto commit + push
+
+Run:
+
+```bash
+npm run git:auto -- "your commit message"
+```
+
+If no message is provided, it uses a timestamp message automatically.
+
 ## Admin account
 
 The seed script creates a default admin account:

@@ -5,17 +5,30 @@ async function handleAuthForm(event) {
   const payload = Object.fromEntries(data.entries());
   const action = form.id === 'login-form' ? 'login' : 'signup';
   const errorElement = form.querySelector('.form-error');
+  const configuredBase = typeof window.AETHERION_CONFIG?.apiBaseUrl === 'string'
+    ? window.AETHERION_CONFIG.apiBaseUrl.trim().replace(/\/+$/, '')
+    : '';
+  const endpoint = configuredBase
+    ? `${configuredBase}/api/auth/${action}`
+    : `/api/auth/${action}`;
 
   try {
-    const response = await fetch('/api/auth/' + action, {
+    const response = await fetch(endpoint, {
       method: 'POST',
-      credentials: 'same-origin',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    const json = await response.json();
-    if (!json.success) {
-      errorElement.textContent = json.error || 'Unable to authenticate';
+    const text = await response.text();
+    let json = null;
+    try {
+      json = text ? JSON.parse(text) : null;
+    } catch (parseErr) {
+      json = null;
+    }
+
+    if (!response.ok || !json?.success) {
+      errorElement.textContent = json?.error || `Unable to authenticate (HTTP ${response.status})`;
       return;
     }
     if (json.user && json.user.role === 'admin') {
@@ -24,7 +37,7 @@ async function handleAuthForm(event) {
       window.location.href = '/';
     }
   } catch (err) {
-    errorElement.textContent = 'Server error. Try again later.';
+    errorElement.textContent = 'Cannot reach auth server. Check API URL/CORS and try again.';
   }
 }
 

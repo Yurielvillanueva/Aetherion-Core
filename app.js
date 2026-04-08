@@ -25,6 +25,16 @@ const MC_RCON_PORT = Number.parseInt(process.env.MC_RCON_PORT || '25575', 10);
 const MC_RCON_PASSWORD = process.env.MC_RCON_PASSWORD || '';
 const RCON_ENABLED = Boolean(MC_RCON_HOST && MC_RCON_PASSWORD);
 const isProduction = process.env.NODE_ENV === 'production';
+const CORS_ORIGINS = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
+const SESSION_COOKIE_SAMESITE = (process.env.SESSION_COOKIE_SAMESITE || 'lax').toLowerCase();
+const resolvedSameSite = ['lax', 'strict', 'none'].includes(SESSION_COOKIE_SAMESITE)
+  ? SESSION_COOKIE_SAMESITE
+  : 'lax';
+const forceSecureCookie = process.env.SESSION_COOKIE_SECURE === 'true';
+const secureCookie = forceSecureCookie || resolvedSameSite === 'none';
 if (!process.env.SESSION_SECRET) {
   const message = 'SESSION_SECRET is not set. Set a strong secret in your environment.';
   if (isProduction) {
@@ -43,6 +53,22 @@ fs.writeFileSync(logHistoryFile, '', { flag: 'a' });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  const origin = req.get('origin');
+  const allowAll = CORS_ORIGINS.includes('*');
+  const originAllowed = Boolean(origin && (allowAll || CORS_ORIGINS.includes(origin)));
+  if (originAllowed) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Vary', 'Origin');
+  }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  return next();
+});
 const sessionParser = session({
   name: 'aetherion.sid',
   secret: SESSION_SECRET,
@@ -51,7 +77,8 @@ const sessionParser = session({
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
-    sameSite: 'lax'
+    sameSite: resolvedSameSite,
+    secure: secureCookie
   }
 });
 app.use(sessionParser);
