@@ -42,6 +42,7 @@ If your frontend is on `*.workers.dev` but your Node API is hosted elsewhere:
 
 1. Set frontend API base URL in [`public/js/config.js`](public/js/config.js):
    - `apiBaseUrl: 'https://your-api-domain.com'`
+   - Quick runtime option from browser console: `setApiBaseUrl('https://your-api-domain.com')`
 2. Set backend env vars:
    - `CORS_ORIGINS=https://your-frontend-domain.workers.dev`
    - `SESSION_COOKIE_SAMESITE=none`
