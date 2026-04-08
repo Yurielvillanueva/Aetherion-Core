@@ -19079,3 +19079,6 @@ Caused by: java.util.concurrent.RejectedExecutionException: Task TrustedListenab
 [01:05:16 INFO]: [QuickShop-Hikari] Update here: https://modrinth.com/plugin/quickshop-hikari
 [01:05:16 INFO]: [QuickShop-Hikari] A new version of QuickShop has been released! [6.3.0.0-SNAPSHOT-5]
 [01:35:16 INFO]: Saving 0 warps
+[02:05:16 INFO]: Saving 0 warps
+[02:05:16 INFO]: [QuickShop-Hikari] Update here: https://modrinth.com/plugin/quickshop-hikari
+[02:05:16 INFO]: [QuickShop-Hikari] A new version of QuickShop has been released! [6.3.0.0-SNAPSHOT-5]
