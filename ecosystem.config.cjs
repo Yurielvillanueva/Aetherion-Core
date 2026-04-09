@@ -13,6 +13,10 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
+        CORS_ORIGINS: 'https://reaching-posting-agriculture-learning.trycloudflare.com',
+        SESSION_COOKIE_SAMESITE: 'none',
+        SESSION_COOKIE_SECURE: 'true',
+        SESSION_SECRET: 'your-secret-key-here',
         MC_SERVER_HOST: '127.0.0.1',
         MC_SERVER_PORT: 25565,
         MC_RCON_HOST: '127.0.0.1',
