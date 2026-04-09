@@ -16,7 +16,7 @@ module.exports = {
         CORS_ORIGINS: 'https://reaching-posting-agriculture-learning.trycloudflare.com',
         SESSION_COOKIE_SAMESITE: 'none',
         SESSION_COOKIE_SECURE: 'true',
-        SESSION_SECRET: 'your-secret-key-here',
+        SESSION_SECRET: 'yAreU08Bhmj3iwxqL6FZ5x03geb0JdjhHOL6OyJ00U8=',
         MC_SERVER_HOST: '127.0.0.1',
         MC_SERVER_PORT: 25565,
         MC_RCON_HOST: '127.0.0.1',
