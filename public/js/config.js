@@ -5,7 +5,7 @@ function normalizeApiBase(url) {
 }
 
 const storedApiBase = normalizeApiBase(window.localStorage.getItem('AETHERION_API_BASE_URL') || '');
-const configuredApiBase = normalizeApiBase(window.AETHERION_CONFIG.apiBaseUrl || '');
+const configuredApiBase = normalizeApiBase(window.AETHERION_CONFIG.apiBaseUrl || 'https://reaching-posting-agriculture-learning.trycloudflare.com');
 const apiBaseUrl = configuredApiBase || storedApiBase;
 
 window.AETHERION_CONFIG.apiBaseUrl = apiBaseUrl;
