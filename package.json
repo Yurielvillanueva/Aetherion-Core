@@ -11,7 +11,9 @@
     "pm2:start": "pm2 start ecosystem.config.cjs --env production",
     "pm2:restart": "pm2 restart ecosystem.config.cjs --env production",
     "pm2:stop": "pm2 stop ecosystem.config.cjs",
-    "pm2:logs": "pm2 logs aetherion-core"
+    "pm2:logs": "pm2 logs aetherion-core",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
   },
   "keywords": [
     "minecraft",
@@ -36,6 +38,7 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "wrangler": "^4.81.1"
   }
 }
