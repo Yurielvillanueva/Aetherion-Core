@@ -1,0 +1,21 @@
+# Railway Configuration
+# This file tells Railway how to deploy your app
+
+# Build Command (optional - Railway auto-detects Node.js)
+# buildCommand: npm run build
+
+# Start Command
+startCommand: npm run railway:start
+
+# Environment Variables
+# Add these in Railway dashboard:
+# CORS_ORIGINS=https://your-railway-app.railway.app
+# SESSION_COOKIE_SAMESITE=lax
+# SESSION_COOKIE_SECURE=true
+# SESSION_SECRET=your-secure-random-secret-here
+# NODE_ENV=production
+# PORT=3000
+
+# Database
+# Railway provides PostgreSQL - you'll need to update your code to use it instead of SQLite
+# Or keep SQLite for simplicity (Railway supports it)

@@ -12,6 +12,7 @@
     "pm2:restart": "pm2 restart ecosystem.config.cjs --env production",
     "pm2:stop": "pm2 stop ecosystem.config.cjs",
     "pm2:logs": "pm2 logs aetherion-core",
+    "railway:start": "npm run seed && npm start",
     "deploy": "wrangler deploy",
     "preview": "wrangler dev"
   },

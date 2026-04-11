@@ -36,6 +36,51 @@ npm start
 
 4. Open `http://localhost:3000` in your browser.
 
+## Production Deployment
+
+### Railway (Recommended - Easiest)
+
+1. **Create Railway Account**: Go to [railway.app](https://railway.app) and sign up
+2. **Connect GitHub**: Link your GitHub account
+3. **Deploy from GitHub**:
+   - Click "New Project" → "Deploy from GitHub repo"
+   - Select your `Aetherion-Core` repository
+   - Railway will auto-detect Node.js and deploy
+
+4. **Set Environment Variables** in Railway dashboard:
+   ```
+   CORS_ORIGINS=https://your-app-name.railway.app
+   SESSION_COOKIE_SAMESITE=lax
+   SESSION_COOKIE_SECURE=true
+   SESSION_SECRET=your-secure-random-secret-here
+   NODE_ENV=production
+   PORT=3000
+   ```
+
+5. **Update Frontend Config**:
+   - In `public/js/config.js`, change the default URL to your Railway URL
+   - Commit and push the changes
+
+6. **Access Your App**: Railway will give you a URL like `https://your-app-name.railway.app`
+
+### Alternative: Render
+
+1. **Create Render Account**: [render.com](https://render.com)
+2. **New Web Service** → Connect GitHub
+3. **Configure**:
+   - Build Command: `npm install`
+   - Start Command: `npm run railway:start`
+4. **Add Environment Variables** (same as Railway)
+5. **Deploy**
+
+### Alternative: Heroku
+
+1. **Install Heroku CLI**
+2. **Login**: `heroku login`
+3. **Create App**: `heroku create your-app-name`
+4. **Set Environment Variables**: `heroku config:set KEY=value`
+5. **Deploy**: `git push heroku main`
+
 ## Cloudflare frontend + external API
 
 If your frontend is on `*.workers.dev` but your Node API is hosted elsewhere:
