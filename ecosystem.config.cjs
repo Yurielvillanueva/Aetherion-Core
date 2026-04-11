@@ -13,7 +13,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
-        CORS_ORIGINS: 'https://equations-bracelet-assisted-cottages.trycloudflare.com',
+        CORS_ORIGINS: 'https://your-railway-app.railway.app',
         SESSION_COOKIE_SAMESITE: 'none',
         SESSION_COOKIE_SECURE: 'true',
         SESSION_SECRET: 'yAreU08Bhmj3iwxqL6FZ5x03geb0JdjhHOL6OyJ00U8=',

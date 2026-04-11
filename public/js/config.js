@@ -5,7 +5,7 @@ function normalizeApiBase(url) {
 }
 
 const storedApiBase = normalizeApiBase(window.localStorage.getItem('AETHERION_API_BASE_URL') || '');
-const configuredApiBase = normalizeApiBase(window.AETHERION_CONFIG.apiBaseUrl || 'https://equations-bracelet-assisted-cottages.trycloudflare.com');
+const configuredApiBase = normalizeApiBase(window.AETHERION_CONFIG.apiBaseUrl || 'https://your-railway-app.railway.app');
 const apiBaseUrl = configuredApiBase || storedApiBase;
 
 window.AETHERION_CONFIG.apiBaseUrl = apiBaseUrl;
