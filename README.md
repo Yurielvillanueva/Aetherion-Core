@@ -45,14 +45,14 @@ npm start
 3. **Deploy from GitHub**:
    - Click "New Project" → "Deploy from GitHub repo"
    - Select your `Aetherion-Core` repository
-   - Railway will auto-detect Node.js and deploy
+   - Railway will **auto-detect Node.js** and deploy automatically
 
-4. **Set Environment Variables** in Railway dashboard:
+4. **Set Environment Variables** in Railway dashboard (Project Settings → Variables):
    ```
    CORS_ORIGINS=https://your-app-name.railway.app
    SESSION_COOKIE_SAMESITE=lax
    SESSION_COOKIE_SECURE=true
-   SESSION_SECRET=your-secure-random-secret-here
+   SESSION_SECRET=your-secure-random-secret-here-make-it-long
    NODE_ENV=production
    PORT=3000
    ```
@@ -62,6 +62,8 @@ npm start
    - Commit and push the changes
 
 6. **Access Your App**: Railway will give you a URL like `https://your-app-name.railway.app`
+
+**Note**: Railway auto-detects Node.js apps and doesn't need a `railway.toml` config file.
 
 ### Alternative: Render
 
